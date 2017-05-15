@@ -22,7 +22,7 @@ TODO
 ## Install
 
 ```sh
-$ go get -u github.com/ilovelili/Katja
+$ go get -u -d github.com/ilovelili/Katja
 ```
 
 Katja depends on [IPFS](https://github.com/jbenet/go-ipfs) and [CoinPrism](http://coinprism.com/)
