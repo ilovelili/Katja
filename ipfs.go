@@ -79,8 +79,19 @@ func GetStrings(node *core.IpfsNode, cid *cid.Cid) (stringArr []string, err erro
 	return stringArr, nil
 }
 
-// GetDAG get DAG proto node
-func GetDAG(node *core.IpfsNode, cid *cid.Cid) (node.Node, error) {
+// GetDAGByString Get DAG by string
+func GetDAGByString(node *core.IpfsNode, inputString string) (node.Node, error) {
+	pointsTo, err := node.Namesys.Resolve(node.Context(), node.Identity.Pretty())
+	if err != nil {
+		return nil, err
+	}
+
+	cid, err := cid.Decode(pointsTo.String())
+	return GetDAGByCid(node, cid)
+}
+
+// GetDAGByCid get DAG proto node
+func GetDAGByCid(node *core.IpfsNode, cid *cid.Cid) (node.Node, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	return node.DAG.Get(ctx, cid)
