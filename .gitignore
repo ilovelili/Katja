@@ -23,7 +23,7 @@ _testmain.go
 *.test
 *.prof
 
-github.com
-gx
-golang.org
-leb.io
+# github.com
+# gx
+# golang.org
+# leb.io
