@@ -7,6 +7,8 @@ import (
 
 	"runtime"
 
+	node "gx/ipfs/Qmb3Hm9QDFmfYuET4pu7Kyg8JV78jFa1nvZx5vnCZsK4ck/go-ipld-format"
+
 	"github.com/ipfs/go-ipfs/core"
 	"github.com/ipfs/go-ipfs/merkledag"
 	"github.com/ipfs/go-ipfs/path"
@@ -75,6 +77,13 @@ func GetStrings(node *core.IpfsNode, cid *cid.Cid) (stringArr []string, err erro
 	}
 
 	return stringArr, nil
+}
+
+// GetDAG get DAG proto node
+func GetDAG(node *core.IpfsNode, cid *cid.Cid) (node.Node, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	return node.DAG.Get(ctx, cid)
 }
 
 // AddString add input string to ipfs node
