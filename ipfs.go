@@ -3,10 +3,10 @@ package katja
 import (
 	"context"
 	"fmt"
-	cid "gx/ipfs/QmYhQaCYEcaPPjxJX7YcPcVKkQfRy6sJ7B3XmGFk82XYdQ/go-cid"
 
 	"runtime"
 
+	cid "gx/ipfs/QmYhQaCYEcaPPjxJX7YcPcVKkQfRy6sJ7B3XmGFk82XYdQ/go-cid"
 	node "gx/ipfs/Qmb3Hm9QDFmfYuET4pu7Kyg8JV78jFa1nvZx5vnCZsK4ck/go-ipld-format"
 
 	"github.com/ipfs/go-ipfs/core"
@@ -79,19 +79,22 @@ func GetStrings(node *core.IpfsNode, cid *cid.Cid) (stringArr []string, err erro
 	return stringArr, nil
 }
 
-// GetDAGByString Get DAG by string
-func GetDAGByString(node *core.IpfsNode, inputString string) (node.Node, error) {
+// GetDAG Get DAG by string
+func GetDAG(node *core.IpfsNode, inputString string) (node.Node, error) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	pointsTo, err := node.Namesys.Resolve(node.Context(), node.Identity.Pretty())
 	if err != nil {
 		return nil, err
 	}
 
-	cid, err := cid.Decode(pointsTo.String())
-	return GetDAGByCid(node, cid)
+	cid, err := core.ResolveToCid(ctx, node, pointsTo)
+	return getDAG(node, cid)
 }
 
-// GetDAGByCid get DAG proto node
-func GetDAGByCid(node *core.IpfsNode, cid *cid.Cid) (node.Node, error) {
+// getDAG get DAG by cid
+func getDAG(node *core.IpfsNode, cid *cid.Cid) (node.Node, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	return node.DAG.Get(ctx, cid)
@@ -121,7 +124,7 @@ func AddString(node *core.IpfsNode, inputString string) (*cid.Cid, error) {
 
 	// Else user has already creatd a DAG
 	newProtoNode := makeStringNode(inputString)
-	cid, err := cid.Decode(pointsTo.String())
+	cid, err := core.ResolveToCid(ctx, node, pointsTo)
 	if err != nil {
 		return nil, err
 	}
